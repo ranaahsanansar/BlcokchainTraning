@@ -20,13 +20,13 @@ Locking & Staking Contract
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Functions to implement:
-stakesLength     // return stakes length
-myStakes	//  takes address as input and return array of Stake (struct) 
-myActiveStakesCount	// returns available stakes of a user
-increaseRewardsPool 	// update values of rewardsPool array onlyOwner
-stake		// stake tokens according to tiers
-unstake		// unstake tokens with reward also deduct 2% fee and transfer to fee address
-changeAddress   // Change fee address
+#stakesLength     // return stakes length
+#myStakes	//  takes address as input and return array of Stake (struct) 
+#myActiveStakesCount	// returns available stakes of a user
+#increaseRewardsPool 	// update values of rewardsPool array onlyOwner
+#stake		// stake tokens according to tiers 
+#unstake		// unstake tokens with reward also deduct 2% fee and transfer to fee address 
+#changeAddress   // Change fee address
 
  
  
