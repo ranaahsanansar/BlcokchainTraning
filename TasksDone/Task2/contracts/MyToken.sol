@@ -2,7 +2,7 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import "contracts/ERC20.sol";
+import "ERC20.sol";
 
 contract MyToken is ERC20("Ahsan" , "ASN") {
     address owner ;

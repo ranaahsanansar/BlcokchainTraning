@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: none
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import "ERC20.sol";
+import "contracts/ERC20.sol";
 
 contract LockingStaking {
     address public owner;
@@ -33,6 +33,8 @@ contract LockingStaking {
         feeAddress = _feeAddress;
         MAX_STAKES = _maxStakes;
     }
+    
+   
 
     struct Stake {
         uint256 amount;
@@ -55,7 +57,6 @@ contract LockingStaking {
         public
         onlyOwner
     {
-        token.transferFrom(msg.sender, address(this), _amount);
         rewardsPool[_index] += _amount;
     }
 
@@ -104,8 +105,6 @@ contract LockingStaking {
         return count;
     }
 
-    
-
     // ------------------------------------
     // Functions for User
     // ------------------------------------
@@ -119,13 +118,13 @@ contract LockingStaking {
         uint256 _time
     );
 
-    function stake(uint256 _amount, uint8 _index) public {
+    function stake(uint256 _amount, uint8 _indexOfTier) public {
         require(
             getStakesLength() <= MAX_STAKES,
             "Limit reached, No more user can stake"
         );
         token.transferFrom(msg.sender, address(this), _amount);
-        stakes.push(Stake(_amount, block.timestamp, _index, true));
+        stakes.push(Stake(_amount, block.timestamp, _indexOfTier, true));
         uint256 stakedIndex = stakes.length - 1;
 
         stakesOf[msg.sender].push(stakedIndex);
@@ -134,8 +133,8 @@ contract LockingStaking {
             msg.sender,
             _amount,
             stakedIndex,
-            periods[_index],
-            rates[_index],
+            periods[_indexOfTier],
+            rates[_indexOfTier],
             block.timestamp
         );
     }
