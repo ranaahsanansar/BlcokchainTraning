@@ -2,3 +2,4 @@ hardhat/node_modules
 hardhat/.openzeppelin
 hardhat/artifacts
 hardhat/cache
+ERC721/node_modules
