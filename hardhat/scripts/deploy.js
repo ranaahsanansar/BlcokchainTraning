@@ -35,6 +35,8 @@ main().catch((error) => {
 
 // Non Upgradeable 
 
+// Task 1 : 0x0B99d7aB51838D0084B21Da63892289d9229ce40 
+
 // MyToken = 0x006D625740bcE48FCa4cd637A8360411BbA29465
 // Locking SmartContract = 0xaaA64f05a0bDaeB258a8D8C68B2686A4dB198361 
 
