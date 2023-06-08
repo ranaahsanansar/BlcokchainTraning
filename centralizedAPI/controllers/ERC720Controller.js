@@ -493,6 +493,8 @@ class ERC720Controller {
       return "Minting Error";
     }
   }
+
+  
 }
 
 export default ERC720Controller;

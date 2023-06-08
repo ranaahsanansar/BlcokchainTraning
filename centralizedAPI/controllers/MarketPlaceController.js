@@ -572,6 +572,35 @@ class MarketPlaceController {
             })
         }
     }
+
+    static buyNft = async (req, res) => {
+
+
+        const { nftId, buyer, paymentHash } = req.body;
+
+        try {
+            const nftDetail = await MarketPlaceModel.find({ tokenId: nftId });
+
+            
+
+            res.status(202).send({
+                "status": "success",
+                "message": "Transaction sent successfully"
+            })
+
+        } catch (err) {
+            console.log("Fetching Erroe");
+            console.log(err)
+            res.status(400).send({
+                "status": "error",
+                "message": "Fetchinf Error"
+            })
+        }
+
+
+
+
+    }
 }
 
 export default MarketPlaceController;
