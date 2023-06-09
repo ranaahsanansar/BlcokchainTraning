@@ -511,7 +511,9 @@ class ERC720Controller {
       console.log(process.env.ESCROW_Wallet_Address)
         const dataResult = await sendTx.transferFrom(process.env.ESCROW_Wallet_Address , to , nftId, {gasLimit: 50000})
         
-        await sendTx.wait();
+        await dataResult.wait();
+
+        
 
         return {
           status: true ,

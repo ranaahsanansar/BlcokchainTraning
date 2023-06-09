@@ -647,6 +647,45 @@ class MarketPlaceController {
                             })
     
                             const resultSaved = await doc.save();
+                            if(ethValue >= listedTokenDetails.price){
+                           
+    
+                                const transferResult = await ERC720Controller.transferNft(listedTokenDetails.tokenId , buyer);
+    
+                                
+        
+                                if(transferResult.status){
+                                    // Transfer Payment to Seller after deduction of 2% fees
+                                    const fees = (parseFloat(listedTokenDetails.price)  * 2 ) / 100 ;
+                                    const valueToSend = parseFloat(listedTokenDetails.price) - fees 
+        
+                                    const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, provider)
+        
+                                    const transactionSendEthes = await wallet.sendTransaction(
+                                        {
+                                            to: listedTokenDetails.seller,
+                                            value: ethers.utils.parseEther(valueToSend.toString()),
+                                            gasLimit: 50000
+                                        }
+                                    )
+        
+                                    res.status(200).send({
+                                        "status": "success",
+                                        "message": "Money Transfer to seller and NFT Transfer to Buyer"
+                                    })
+                                    return
+                                }else {
+                                    const reverse = await PyamentHashModel.findByIdAndDelete(resultSaved._id);
+                                    res.status(400).send({
+                                        "status": "error",
+                                        "message": "Transaction Failed!"
+                                    })
+                                    return
+                                }
+        
+        
+                            }
+        
                         }catch(err){
                             res.status(200).send({
                                 "status": "success",
@@ -654,45 +693,8 @@ class MarketPlaceController {
                             })
                             return
                         }
-    
-                        if(ethValue >= listedTokenDetails.price){
-                           
-    
-                            const transferResult = await ERC720Controller.transferNft(listedTokenDetails.tokenId , buyer);
-
-                            
-    
-                            if(transferResult.status){
-                                // Transfer Payment to Seller after deduction of 2% fees
-                                const fees = (parseFloat(listedTokenDetails.price)  * 2 ) / 100 ;
-                                const valueToSend = parseFloat(listedTokenDetails.price) - fees 
-    
-                                const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, provider)
-    
-                                const transactionSendEthes = await wallet.sendTransaction(
-                                    {
-                                        to: listedTokenDetails.seller,
-                                        value: ethers.utils.parseEther(valueToSend.toString()),
-                                        gasLimit: 50000
-                                    }
-                                )
-    
-                                res.status(200).send({
-                                    "status": "success",
-                                    "message": "Money Transfer to seller and NFT Transfer to Buyer"
-                                })
-                                return
-                            }else {
-                                res.status(400).send({
-                                    "status": "error",
-                                    "message": "Please Try Again Later Error in transfer of NFT!"
-                                })
-                                return
-                            }
-    
-    
-                        }
-    
+                        
+                        
     
     
     
