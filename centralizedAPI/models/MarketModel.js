@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const  marketPlaceSchema = new mongoose.Schema({
     tokenId: {type:Number , required:true , trim:true},
-    price: {type:Number , required:true , trim:true},
+    price: {type:String , required:true , trim:true},
     seller: {type:String , required:true , trim:true},
     metadata: {
         name: {type: String , required: true , trim: true},

@@ -440,6 +440,10 @@ const abi = [
 
 import { ethers } from "ethers";
 import axios from 'axios';
+// import MarketPlaceModel from "../models/MarketModel.js";
+
+import PyamentHashModel from "../models/PyamentHashModel.js";
+import ERC720Controller from "./ERC720Controller.js";
 import MarketPlaceModel from "../models/MarketModel.js";
 
 class MarketPlaceController {
@@ -458,7 +462,7 @@ class MarketPlaceController {
 
             if (transaction.from.toUpperCase() == sellerWallet) {
                 const provider = new ethers.providers.JsonRpcProvider(process.env.MUMBAI_URL);
-                const nftContractData = new ethers.Contract(contractAddress, abi, provider);
+                const nftContractData = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, provider);
 
                 const owner = await nftContractData.ownerOf(parseInt(tokenId));
 
@@ -573,33 +577,241 @@ class MarketPlaceController {
         }
     }
 
+    // getListedTokenDetails(_tokenId) {
+    //     const tokenDetails = MarketPlaceModel.find({tokenId: _tokenId});
+    //     return tokenDetails;
+    // }
+
     static buyNft = async (req, res) => {
-
-
         const { nftId, buyer, paymentHash } = req.body;
+        console.log(buyer)
 
         try {
-            const nftDetail = await MarketPlaceModel.find({ tokenId: nftId });
+            // const nftDetail = await MarketPlaceModel.find({ tokenId: nftId });
+
+            let buyerWallet = buyer.toUpperCase();
+            let escroWallet = process.env.ESCROW_Wallet_Address;
+
+            const provider = new ethers.providers.JsonRpcProvider(process.env.MUMBAI_URL);
+
+            const transaction = await provider.getTransaction(paymentHash);
+
+            // console.log("Payment Hash Result ")
+            // console.log(transaction)
+
+            let valueTransfer = transaction.value.toString();
+
+            // console.log("Value from Transaction")
+            // console.log(valueTransfer)
 
             
 
-            res.status(202).send({
-                "status": "success",
-                "message": "Transaction sent successfully"
+            const listedTokenDetails = await MarketPlaceModel.findById(nftId);
+
+            console.log("Listed Token Details")
+            console.log(listedTokenDetails.tokenId)
+
+            if(!listedTokenDetails){
+                res.status(400).send({
+                    "status": "error",
+                    "message": "There is no nft with this ID in our Database"
+                })
+            }
+            
+            try{
+                if(transaction.from.toUpperCase() == buyerWallet ){
+                    if(transaction.to.toUpperCase() == escroWallet.toUpperCase()){
+    
+                        const paymentInDB = PyamentHashModel.findOne({hash: paymentHash})
+                        console.log("Payment In DB")
+                        console.log(paymentInDB.hash)
+    
+                        if(paymentInDB.hash != null){
+                            res.status(400).send({
+                                "status": "error",
+                                "message": "Payment is Already Consumed!"
+                            })
+                            return
+                        }
+    
+                        const ethValue = ethers.utils.formatEther(valueTransfer)
+                        console.log("Eth Value")
+
+                        console.log(ethValue)
+                        console.log(listedTokenDetails.price)
+
+
+                        try{
+                            const doc = new PyamentHashModel({
+                                hash: paymentHash
+                            })
+    
+                            const resultSaved = await doc.save();
+                        }catch(err){
+                            res.status(200).send({
+                                "status": "success",
+                                "message": "You have consumed this transaction"
+                            })
+                            return
+                        }
+    
+                        if(ethValue >= listedTokenDetails.price){
+                           
+    
+                            const transferResult = await ERC720Controller.transferNft(listedTokenDetails.tokenId , buyer);
+
+                            
+    
+                            if(transferResult.status){
+                                // Transfer Payment to Seller after deduction of 2% fees
+                                const fees = (parseFloat(listedTokenDetails.price)  * 2 ) / 100 ;
+                                const valueToSend = parseFloat(listedTokenDetails.price) - fees 
+    
+                                const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, provider)
+    
+                                const transactionSendEthes = await wallet.sendTransaction(
+                                    {
+                                        to: listedTokenDetails.seller,
+                                        value: ethers.utils.parseEther(valueToSend.toString()),
+                                        gasLimit: 50000
+                                    }
+                                )
+    
+                                res.status(200).send({
+                                    "status": "success",
+                                    "message": "Money Transfer to seller and NFT Transfer to Buyer"
+                                })
+                                return
+                            }else {
+                                res.status(400).send({
+                                    "status": "error",
+                                    "message": "Please Try Again Later Error in transfer of NFT!"
+                                })
+                                return
+                            }
+    
+    
+                        }
+    
+    
+    
+    
+                    }else{
+                        res.status(400).send({
+                            "status": "error",
+                            "message": "Payment is not sent to Our Escro Wallet"
+                        })
+                        return
+                    }
+                }else{
+                    res.status(400).send({
+                        "status": "error",
+                        "message": "Buyer is not matched with transaction sender"
+                    })
+                    return
+                }
+            }catch(err){
+                console.log("Inside Error TRY Catch")
+                console.log(err)
+            res.status(400).send({
+                "status": "error",
+                "message": "Transation hash metching Error"
             })
+            return
+            }
+
+            // if(transaction.from.toUpperCase() == buyerWallet ){
+            //     if(transaction.to.toUpperCase() == escroWallet.toUpperCase()){
+
+            //         const paymentInDB = PyamentHashModel.find({hash: paymentHash})
+            //         console.log("Payment In DB")
+            //         console.log(paymentInDB)
+
+            //         if(paymentInDB == null){
+            //             res.status(400).send({
+            //                 "status": "error",
+            //                 "message": "Payment is Already Consumed!"
+            //             })
+            //             return
+            //         }
+
+            //         const ethValue = ethers.utils.formatEther(parseInt(valueTransfer))
+
+            //         if(parseFloat(ethValue) >= parseFloat(listedTokenDetails.price)){
+            //             const doc = new PyamentHashModel({
+            //                 hash: paymentHash
+            //             })
+
+            //             const resultSaved = await doc.save();
+
+            //             const transferResult = await ERC720Controller.transferNft(nftId , buyer);
+
+            //             if(transferResult.status){
+            //                 // Transfer Payment to Seller after deduction of 2% fees
+            //                 const fees = (parseFloat(listedTokenDetails.price)  * 2 ) / 100 ;
+            //                 const valueToSend = parseFloat(listedTokenDetails.price) - fees 
+
+            //                 const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, provider)
+
+            //                 const transactionSendEthes = await wallet.sendTransaction(
+            //                     {
+            //                         to: listedTokenDetails.seller,
+            //                         value: ethers.utils.parseEther(valueToSend.toString()),
+            //                         gasLimit: 50000
+            //                     }
+            //                 )
+
+            //                 res.status(200).send({
+            //                     "status": "success",
+            //                     "message": "Money Transfer to seller and NFT Transfer to Buyer"
+            //                 })
+            //                 return
+
+
+
+            //             }else {
+            //                 res.status(400).send({
+            //                     "status": "error",
+            //                     "message": "Please Try Again Later Error in transfer of NFT!"
+            //                 })
+            //                 return
+            //             }
+
+
+            //         }
+
+
+
+
+            //     }else{
+            //         res.status(400).send({
+            //             "status": "error",
+            //             "message": "Payment is not sent to Our Escro Wallet"
+            //         })
+            //         return
+            //     }
+            // }else{
+            //     res.status(400).send({
+            //         "status": "error",
+            //         "message": "Buyer is not matched with transaction sender"
+            //     })
+            //     return
+            // }
+
+            // res.status(202).send({
+            //     "status": "success",
+            //     "message": "Transaction sent successfully"
+            // })
 
         } catch (err) {
             console.log("Fetching Erroe");
             console.log(err)
             res.status(400).send({
                 "status": "error",
-                "message": "Fetchinf Error"
+                "message": "Fetching Error"
             })
+            return
         }
-
-
-
-
     }
 }
 
@@ -607,6 +819,3 @@ export default MarketPlaceController;
 
 // get metadata of JSON file 
 //chat.openai.com/share/80cb53d2-391a-4e23-815a-807a2e6a1f78
-
-
-

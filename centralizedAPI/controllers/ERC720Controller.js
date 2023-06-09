@@ -494,6 +494,42 @@ class ERC720Controller {
     }
   }
 
+  static transferNft = async (nftId , to ) => {
+
+    let contractAddress = process.env.CONTRACT_ADDRESS
+      
+      const provider = new ethers.providers.JsonRpcProvider(process.env.MUMBAI_URL);
+      const wallet = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY, provider)
+      const sendTx = new ethers.Contract(
+        contractAddress,
+        abi,
+        wallet
+      )
+      try{
+      console.log("Escrow and TO")
+      console.log(to)
+      console.log(process.env.ESCROW_Wallet_Address)
+        const dataResult = await sendTx.transferFrom(process.env.ESCROW_Wallet_Address , to , nftId, {gasLimit: 50000})
+        
+        await sendTx.wait();
+
+        return {
+          status: true ,
+          hash: dataResult.hash
+        }
+
+      }catch(err){
+        console.log("Error in Tranfer NFT");
+        console.log(err);
+        return {
+          status: false,
+          hash: "0"
+        } ;
+      }
+      
+
+  }
+
   
 }
 
