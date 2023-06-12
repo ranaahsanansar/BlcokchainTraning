@@ -3,4 +3,4 @@ hardhat/.openzeppelin
 hardhat/artifacts
 hardhat/cache
 ERC721/node_modules
-centralizedAPI/.env
+centralizedAPI/env
