@@ -4,3 +4,4 @@ hardhat/artifacts
 hardhat/cache
 ERC721/node_modules
 centralizedAPI/env
+NestJs/test-api/node_modules
