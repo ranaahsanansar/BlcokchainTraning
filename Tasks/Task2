@@ -1,14 +1,11 @@
 Locking & Staking Contract
 
-
 /////////////////////////////////////////////////////////Basic Initializations/////////////////////////////////////////////////////////////////////
 => There will 3 different types of staking tiers i.e 10Minutes, 20Minutes, 30Minutes    ------------uint type Array      -----periods
 => There will be 3 different amounts for rewardsPool in wei i.e 100,1000,2000                 -----------------uint type array     ----rewardsPool
 => There will be 3 different rates for reward calculation in wei i.e 10,20,30                 -----------------uint type array       ---------rates
 
-
 => There will be a 2% fix fee for all tiers
-
 
 => There will be a maximum limit for number of users at the time of contract deployment to stake, but admin/deployer/owner can increase decrease this limit      ------MAX_STAKES
 => Struct for maintaining details for stake   ------Stake
@@ -28,7 +25,3 @@ Functions to implement:
 #unstake		// unstake tokens with reward also deduct 2% fee and transfer to fee address 
 #changeAddress   // Change fee address
 
- 
- 
- 
- 
