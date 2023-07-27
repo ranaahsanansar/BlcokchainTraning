@@ -6,7 +6,7 @@ const mapped_types_1 = require("@nestjs/mapped-types");
 const create_user_dto_1 = require("./create-user.dto");
 class UpdateUserDto extends (0, mapped_types_1.PartialType)(create_user_dto_1.CreateUserDto) {
     static _OPENAPI_METADATA_FACTORY() {
-        return {};
+        return { firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, age: { required: true, type: () => Number } };
     }
 }
 exports.UpdateUserDto = UpdateUserDto;
