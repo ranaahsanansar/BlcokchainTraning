@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus , Res, UseGuards} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus , Res, UseGuards, Req} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginUsrDto } from './dto/login-user.dto';
 import { Response } from 'express';
 import { AuthGuard } from './user.guard';
-
+import { Request } from 'express';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
@@ -33,7 +33,8 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    console.log(req.body)
     return this.userService.findOne(+id);
   }
 
