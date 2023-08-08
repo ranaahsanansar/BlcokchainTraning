@@ -472,7 +472,6 @@ class ERC720Controller {
 
       await doc.save()
       })
-
       // console.log("Token Id 2")
       //   console.log(tokenID);
 

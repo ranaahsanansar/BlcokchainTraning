@@ -24,12 +24,10 @@ export class UserController {
     return this.userService.login(loginUsrDto , response)
   }
 
-
   @Get('logout')
   logout( @Res({passthrough: true}) response: Response) {
     return this.userService.logout(response);
   }
-
 
   @UseGuards(AuthGuard)
   @Get(':id')
