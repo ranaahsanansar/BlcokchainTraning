@@ -19,6 +19,5 @@ export class AppController {
       console.log("Error")
       return err;
     }
-
   }
 }

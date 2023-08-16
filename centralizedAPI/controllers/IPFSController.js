@@ -12,7 +12,6 @@ const uploadFileToIPFS = async (fileName) => {
     const formData = new FormData();
     formData.append('file', actualImage, { filename: fileName });
 
-
     const response = await axios({
       method: "post",
       url: "https://api.pinata.cloud/pinning/pinFileToIPFS",

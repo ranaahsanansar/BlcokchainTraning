@@ -10,11 +10,10 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     await app.init();
   });
-
+  
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
@@ -22,3 +21,4 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 });
+

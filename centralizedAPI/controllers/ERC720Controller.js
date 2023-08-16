@@ -457,8 +457,9 @@ class ERC720Controller {
       )
       const dataResult = await sendTx.safeMint(to, url);
       var txHash = dataResult.hash;
+
       sendTx.on('Transfer', async (from, to, tokenId, event) => {
-        console.log("Token Id 1")
+        // console.log("Token Id 1")
         console.log(tokenId.toString());
         var newTokenID = tokenId.toString();
         console.log("Transaction Hash" + txHash);

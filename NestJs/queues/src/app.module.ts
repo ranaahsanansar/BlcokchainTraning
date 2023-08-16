@@ -13,7 +13,7 @@ import { MesConsumer } from './msg.consumer';
   }),
   BullModule.registerQueue({
     name: 'msgqueue',
-  })
+  }),
 ],
   controllers: [AppController],
   providers: [AppService , MesConsumer ],
